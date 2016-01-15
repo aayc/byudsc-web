@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+  <script src="semantic/dist/jquery-2.2.0.min.js"></script>
+  <script src="semantic/dist/semantic.min.js"></script>
+</head>
+
+<body>
+  <div class="ui page grid">
+    <div class="row">
+      <div style="padding-top: 1em" class="column padding-reset">
+        <div class="ui huge message page center aligned grid">
+          <h1 class="ui huge header">Techniques</h1>
+        </div>
+      </div>
+    </div>
+    <div class="ui inverted compact menu">
+      <div class="ui simple dropdown item">
+        Bayesian Statistics
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item">Poisson-Gamma Linear Regression</div>
+          <div class="item">Finite Mixture Model</div>
+        </div>
+      </div>
+      <div class="ui simple dropdown item">
+        Classification
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item">Simple Neural Networks</div>
+          <div class="item">Recurrent Neural Networks</div>
+          <div class="item">Clustering</div>
+        </div>
+      </div>
+      <div class="ui simple dropdown item">
+        Choosing Features
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item">Principal Component Analysis</div>
+        </div>
+      </div>
+      <div class="ui simple dropdown item">
+        Optimization
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item">Principles of Algorithmic Analysis</div>
+          <div class="item">Dynamic Programming</div>
+          <div class="item">Convex Optimization</div>
+          <div class="item">R Tips and Tricks</div>
+        </div>
+      </div>
+      <div class="ui simple dropdown item">
+        Teambuilding
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item">Learning from Kaggle mistakes</div>
+          <div class="item">How to work as a team</div>
+          <div class="item">Code Style & Organization</div>
+        </div>
+      </div>
+      <div class="ui simple dropdown item">
+        Miscellaneous
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="item">Other stuff</div>
+        </div>
+      </div>
+    </div>
+    <div class="row"><a href="index.html" class="ui blue button">Home</a></div>
+  </div>
+</body>
+<script>
+  $('.ui.form')
+  .form({
+    fields: {
+      'name'            : 'empty',
+      'email-address'   : 'empty',
+      'subject'         : 'empty',
+      'message'         : 'empty'
+    }
+  });
+</script>
+</html>

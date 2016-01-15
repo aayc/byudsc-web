@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+  <script src="semantic/dist/jquery-2.2.0.min.js"></script>
+  <script src="semantic/dist/semantic.min.js"></script>
+</head>
+
+<body>
+  <div class="ui page grid">
+    <div class="row">
+      <div style="padding-top: 1em" class="column padding-reset">
+        <div class="ui huge message page center aligned grid">
+          <h1 class="ui huge header">How Do I Get Involved?</h1>
+        </div>
+      </div>
+    </div>
+    <div class="row"><a href="index.html" class="ui blue button">Home</a></div>
+    <div class="row">
+      <div class="ui horizontal divider">Skills</div>
+      <div class="eight wide column">
+        <p><b>What do I need to know?</b></p>
+        <p>We accept members of all levels of experience!  Currently we hone our skills using Kaggle competitions, which offer beginner, intermediate and advanced levels of participation.  We also host presentations from our own members on topics in Machine Learning, Applied Statistics and more!</p>
+        <p><b>What should I do to prepare?</b></p>
+        <p>See our <a href="techniques.html">techniques</a> and <a href="writeups.html">write ups</a> pages to read what we've been presenting and studying recently.</p>
+      </div>
+      <div class="eight wide column">
+        <h3>Past topics include:</h3>
+          <div class="ui bulleted list">
+            <div class="item">Bayesian Statistical Analysis</div>
+            <div class="item">Logistic Regression in R</div>
+            <div class="item">Introduction to Neural Networks</div>
+          </div>
+      </div>
+      <div class="ui horizontal divider">Join</div>
+      <div class="eight wide column">
+        <p><b>Where do I sign up?</b></p>
+        <p>I don't know.</p>
+      </div>
+      <div class="eight wide column">
+        <h3>Meeting Time:</h3>
+        <p>Thursday at 8:00pm every week.</p>
+        <p>See our events page for updates on what we're working on!
+        <a href="events.html" class="ui green button">Events &raquo;</a>
+      </div>
+      <div class="ui horizontal divider">Community</div>
+      <div class="eight wide column">
+        <p><b>I love this club!  Where can I do more data science?</b></p>
+        <p>The Utah County Data Science crew has a meet up.  Contact us for more information on that.</p>
+      </div>
+      <div class="eight wide column">
+        <h3>Utah County Data Science Meetup</h3>
+        <a href="http://www.meetup.com/Utah-County-Data-Science-Meetup/events/227891007/" class="ui red button">DSC Meetup &raquo;</a>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  $('.ui.form')
+  .form({
+    fields: {
+      'name'            : 'empty',
+      'email-address'   : 'empty',
+      'subject'         : 'empty',
+      'message'         : 'empty'
+    }
+  });
+</script>
+</html>
