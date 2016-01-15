@@ -5,6 +5,9 @@
   <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
   <script src="semantic/dist/jquery-2.2.0.min.js"></script>
   <script src="semantic/dist/semantic.min.js"></script>
+  <script type="text/javascript"
+  src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
 </head>
 
 <body>
@@ -16,70 +19,98 @@
         </div>
       </div>
     </div>
-    <div class="ui inverted compact menu">
-      <div class="ui simple dropdown item">
-        Bayesian Statistics
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item">Poisson-Gamma Linear Regression</div>
-          <div class="item">Finite Mixture Model</div>
+    <div class="ui center aligned">
+
+      <div class="ui inverted compact menu">
+        <div class="ui item">
+          <a href="index.html" class="ui blue button">Home</a>
         </div>
-      </div>
-      <div class="ui simple dropdown item">
-        Classification
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item">Simple Neural Networks</div>
-          <div class="item">Recurrent Neural Networks</div>
-          <div class="item">Clustering</div>
+        <div class="ui simple dropdown item">
+          Bayesian Statistics
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="article item" content-link="intro-bayes-analysis.html">Introduction to Bayesian Analysis</div>
+            <div class="article item" content-link="mixmodel.html">Finite Mixture Model</div>
+          </div>
         </div>
-      </div>
-      <div class="ui simple dropdown item">
-        Choosing Features
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item">Principal Component Analysis</div>
+        <div class="ui simple dropdown item">
+          Classification
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="article item">Simple Neural Networks</div>
+            <div class="article item">Recurrent Neural Networks</div>
+            <div class="article item">Clustering</div>
+          </div>
         </div>
-      </div>
-      <div class="ui simple dropdown item">
-        Optimization
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item">Principles of Algorithmic Analysis</div>
-          <div class="item">Dynamic Programming</div>
-          <div class="item">Convex Optimization</div>
-          <div class="item">R Tips and Tricks</div>
+        <div class="ui simple dropdown item">
+          Choosing Features
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="article item">Principal Component Analysis</div>
+          </div>
         </div>
-      </div>
-      <div class="ui simple dropdown item">
-        Teambuilding
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item">Learning from Kaggle mistakes</div>
-          <div class="item">How to work as a team</div>
-          <div class="item">Code Style & Organization</div>
+        <div class="ui simple dropdown item">
+          Optimization
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="article item">Principles of Algorithmic Analysis</div>
+            <div class="article item">Dynamic Programming</div>
+            <div class="article item">Convex Optimization</div>
+            <div class="article item">R Tips and Tricks</div>
+          </div>
         </div>
-      </div>
-      <div class="ui simple dropdown item">
-        Miscellaneous
-        <i class="dropdown icon"></i>
-        <div class="menu">
-          <div class="item">Other stuff</div>
+        <div class="ui simple dropdown item">
+          Teambuilding
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="article item">Learning from Kaggle mistakes</div>
+            <div class="article item">How to work as a team</div>
+            <div class="article item">Code Style & Organization</div>
+          </div>
+        </div>
+        <div class="ui simple dropdown item">
+          Miscellaneous
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="article item">Other stuff</div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="row"><a href="index.html" class="ui blue button">Home</a></div>
+    <div class="row"></div>
+    <div id="inject-here" class="ui row">
+    </div>
+    </div>
   </div>
 </body>
 <script>
-  $('.ui.form')
-  .form({
-    fields: {
-      'name'            : 'empty',
-      'email-address'   : 'empty',
-      'subject'         : 'empty',
-      'message'         : 'empty'
-    }
+  $(document).ready(function () {
+    /* When an article title is clicked, it is bolded, and the previously bolded title is unbolded. */
+    var previousActiveArticle = null;
+    $(".article").click(function () {
+      contentAddress = $(this).attr('content-link');
+      if (contentAddress === undefined) {
+        /* The address doesn't exist, so we couldn't find the page. */
+        $("#inject-here").html("<div class=\"ui page grid\">Sorry, we couldn't find the article \"" + $(this).html() + "\".  Please contact us to let us know.</div>");
+      } 
+      else {
+        $.get("technique-articles/" + contentAddress, function (content) {
+          /* Bold the current article */
+          if (previousActiveArticle !== null) previousActiveArticle.removeClass("active");
+          $(this).addClass("active");
+          previousActiveArticle = $(this);
+
+          /* Inject the HTML */
+          $("#inject-here").html(content);
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        })
+        .fail(function () {
+          $("#inject-here").html("<div class=\"ui page grid\">Sorry, we couldn't find the article \"" + $(this).html() + "\".  Please contact us to let us know.</div>");
+        }.bind($(this)));
+      }
+    });
+
+
   });
 </script>
 </html>
