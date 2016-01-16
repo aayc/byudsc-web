@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/jquery-2.2.0.min.js"></script>
+</head>
+
+<body>
+<script>
+$.get("?q=w", function (data) {
+	console.log("? data: " + data);
+}).fail(function () {
+	console.log("failed!");
+});
+</script>
+</body>
+
+</html>
