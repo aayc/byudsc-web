@@ -36,12 +36,19 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 	def do_POST(self):
 		content_len = int(self.headers.getheader('content-length', 0))
 		post_body = self.rfile.read(content_len)
-		parts = [i for i in post_body.split("!")];
-		qs = {k: v for (k, v) in [(i[0], i[1]) for i in parts[j].split("=") for j in parts]}
-		print "qs: ", qs
-		print "POST BODY: ", post_body
-		self.wfile.write("heyehyeh" + stopCode);
-		return;
+		if len(post_body) > 0:
+			print "presplit parts:",post_body
+			post_body.replace("!", "");
+			parts = [i for i in post_body.split("&")];
+			print "Split parts: ", parts
+			parts = map(lambda x: (x.split("=")[0], x.split("=")[1]), parts)
+			qs = {i[0]:i[1] for i in parts}
+			print "q map: ", qs
+			if "arg" in qs:
+				print "qs: ", qs
+				print "POST BODY: ", post_body
+				self.wfile.write("heyehyeh" + stopCode);
+				return;
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 Handler = ServerHandler
