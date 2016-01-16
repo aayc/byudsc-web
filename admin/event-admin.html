@@ -17,9 +17,28 @@
   </div>
   <div class="row">
     <div class="ten wide column">
+      <h2><b>Create New Event Category</b></h2>
+      <div class="ui input">
+        <input id="new-category-name" type="text" name="name" placeholder="Example: February 2016" value="TEST">
+      </div>
+      <button id="new-category-submit" class="ui blue button">Save this category to JSON</button> <!-- TODO - WHAT IF THE NAME ALREADY EXISTS? -->
+    </div>
+  </div>
+  <div class="row">
+    <div class="ten wide column">
       <h2><b>Create New Event</b></h2>
       <form id="new-event-form" method="get" class="ui center aligned form">
         <input type="hidden" name="arg" value="new_event"></input>
+        <div class="twelve wide field">
+          <label>Event Category</label>
+          <div id="new-event-category-picker" class="ui dropdown">
+            <div class="text">Choose an Event Category</div>
+            <i class="dropdown icon"></i>
+            <div id="new-event-category-picker-content" class="menu">
+              <!-- Populated by Javascript -->
+            </div>
+          </div>
+        </div>
         <div class="twelve wide field">
           <label>Event Name</label>
           <input id="new-event-name" type="text" name="name" placeholder="Example: Data Science Meeting" value="TEST">
@@ -58,6 +77,7 @@
         <div class="text">Choose an Event</div>
         <i class="dropdown icon"></i>
         <div id="event-picker-content" class="menu">
+          <div class="item">Thing!</div>
           <!-- Populated by Javascript -->
         </div>
       </div>
@@ -91,17 +111,43 @@
     $(window).resize(resizeAce);
     resizeAce();
 
-    /* On form submit, add editor contents to request 
-        with a hidden input element */
+    /* Don't form submit - post the data*/
     $("#new-event-form").submit(function (evt) {
       var content = editor.getValue();
-      $('<input />').attr('type', 'hidden')
-        .attr('name', "content")
-        .attr('value', content)
-        .appendTo('#new-event-form');
+      evt.preventDefault()
+      $.ajax({
+        type: "POST",
+        url: "event-admin.html",
+        data: {
+          "arg" : "new-event",
+          "name": $("#new-event-name").val(),
+          "date": $("#new-event-date").val(),
+          "content": content
+        },
+        success: function (data) {
+          console.log("Got data back from post: " + data);
+        }
+      })
+      // TODO post it!
       return true;
     });
 
+    /* Submitting a new category name is also a post */
+    $("#new-category-submit").click(function () {
+      if (confirm("Are you sure you want to create the category " + $("#new-category-name").val() + "?")) {
+        $.ajax({
+          type: "POST",
+          url: "event-admin.html",
+          data: {
+            "arg" : "new-category",
+            "name": $("#new-category-name").val()
+          },
+          success: function (data) {
+            console.log("Got data back from post after submitting category name: " + data);
+          }
+        });
+      }
+    })
 
     /* Update the preview whenever changes are made. */
     function updateNewEventPreview () {
@@ -116,37 +162,30 @@
 
     /* Populate Edit/Delete box with current articles by reading
     from json file. */
-    (function () {
+    populateDropdowns = function () {
       $.getJSON("events.json", function (data) {
-        var dropdownHtml = "";
+        var editorDropdownHtml = "";
+        var newDropdownHtml = "";
         for (var i = 0; i < data["categories"].length; i++) {
           var category = data["categories"][i];
-          dropdownHtml += "<div class=\"item\">" + category["category-name"] + " &raquo;<div class=\"menu\">"
+          editorDropdownHtml += "<div class=\"item\">" + category["category-name"] + " &raquo;<div class=\"menu\">"
+          newDropdownHtml += "<div class=\"item\">" + category["category-name"] + "</div>"
           for (var j = 0; j < category.events.length; j++) {
-            dropdownHtml += "<div class=\"item\">" + category.events[i].name + "</div>"
+            editorDropdownHtml += "<div class=\"item\">" + category.events[i].name + "</div>"
           }
-          dropdownHtml += "</div></div>"
+          editorDropdownHtml += "</div></div>"
         }
-        $("#event-picker-content").html(dropdownHtml);
-        $("#event-picker").dropdown({
-          maxSelections: 1
-        });
+        $("#event-picker-content").html(editorDropdownHtml);
+        $("#event-picker").dropdown({ maxSelections: 1 });
+        $("#new-event-category-picker-content").html(newDropdownHtml);
+        $("#new-event-category-picker").dropdown({ maxSelections: 1});
       }).fail(function (err) {
         console.log("Failed to fetch JSON events structure - possibly invalid JSON?");
       });
-    })();
+    }
+    populateDropdowns();
 
-    $.ajax({
-      type: "POST",
-      url: "event-admin.html",
-      data: {
-        "arg" : "new-event",
-        "wakka":"wakka!"
-      },
-      success: function (data) {
-        console.log("Got data back from post: " + data);
-      }
-    })
+    
 </script>
 </body>
 

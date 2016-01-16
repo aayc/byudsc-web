@@ -22,32 +22,46 @@ stopCode = "STOPCODE999";
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
-	def do_GET(self):
-		qs = parse_qs(urlparse(self.path).query)
-		'''print "GOT GET";
-		if "arg" in qs.keys():
-			print "ARG IN KEYS"
-			if qs["arg"] == "new_event":
-				print "HELLO"
-				self.wfile.write(stopCode);'''
+	def decodePostBody(self, post_body):
+		post_body.replace("!", "");
+		parts = [i for i in post_body.split("&")];
+		parts = map(lambda x: (x.split("=")[0], x.split("=")[1]), parts)
+		qs = {i[0]:i[1] for i in parts}
+		return qs;
 
+	def getEventJson(self, qs):
+		print "NEW EVENT ARG DETECTED"
+		required_fields = ("name", "date", "content");
+		if all([x in qs for x in required_fields]):
+			return json.dumps({
+				name: qs["name"], date: qs["date"], content: qs["content"]
+			});
+		else:
+			self.wfile.write("INVALID NEW EVENT REQUEST - NOT ENOUGH PARAMETERS");
+
+	def getEventStructure(self, f):
+		with open("events.json") as f:
+			event_structure = json.loads(''.join(f.readlines()))
+		print "EVENTS.JSON: ",event_structure;
+		return event_structure
+
+	def do_GET(self):
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 	def do_POST(self):
 		content_len = int(self.headers.getheader('content-length', 0))
 		post_body = self.rfile.read(content_len)
 		if len(post_body) > 0:
-			print "presplit parts:",post_body
-			post_body.replace("!", "");
-			parts = [i for i in post_body.split("&")];
-			print "Split parts: ", parts
-			parts = map(lambda x: (x.split("=")[0], x.split("=")[1]), parts)
-			qs = {i[0]:i[1] for i in parts}
-			print "q map: ", qs
+			qs = self.decodePostBody(post_body);
+
 			if "arg" in qs:
-				print "qs: ", qs
-				print "POST BODY: ", post_body
-				self.wfile.write("heyehyeh" + stopCode);
+				if qs["arg"] == "new-event":
+					event = self.getNewEventJson(qs);
+					print "CONSTRUCTED JSON: ", event;
+					struct = self.getEventStructure("events.json");
+				elif qs["arg"] == "new-category":
+					print "NEW CATEGORY COMING SOON!"
+
 				return;
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
