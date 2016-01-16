@@ -1,10 +1,8 @@
 import SimpleHTTPServer
 import SocketServer
-import logging
-import cgi
 from urlparse import urlparse, parse_qs
+import urllib;
 import json
-
 import sys
 
 
@@ -26,24 +24,27 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		post_body.replace("!", "");
 		parts = [i for i in post_body.split("&")];
 		parts = map(lambda x: (x.split("=")[0], x.split("=")[1]), parts)
-		qs = {i[0]:i[1] for i in parts}
+		qs = {i[0] : urllib.unquote_plus(i[1]) for i in parts}
 		return qs;
 
-	def getEventJson(self, qs):
+	def getNewEventJson(self, qs):
 		print "NEW EVENT ARG DETECTED"
-		required_fields = ("name", "date", "content");
+		required_fields = ("parent-category", "name", "date", "content");
 		if all([x in qs for x in required_fields]):
-			return json.dumps({
-				name: qs["name"], date: qs["date"], content: qs["content"]
-			});
+			return { "name": qs["name"], "date": qs["date"], "content": qs["content"] };
 		else:
-			self.wfile.write("INVALID NEW EVENT REQUEST - NOT ENOUGH PARAMETERS");
+			return "BAD";
 
-	def getEventStructure(self, f):
-		with open("events.json") as f:
+	def readJSONFile(self, f):
+		with open("events.json", "r") as f:
 			event_structure = json.loads(''.join(f.readlines()))
-		print "EVENTS.JSON: ",event_structure;
 		return event_structure
+
+	def writeJSONFile(self, data, f):
+		s = json.dumps(data)
+		with open("events.json", "w") as f:
+			print "WHOA WHOA WHAO WE TRIED TO WRITE SOMETHING?"
+			f.write(s);
 
 	def do_GET(self):
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
@@ -53,12 +54,33 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		post_body = self.rfile.read(content_len)
 		if len(post_body) > 0:
 			qs = self.decodePostBody(post_body);
-
+			print "QS: ", qs
 			if "arg" in qs:
 				if qs["arg"] == "new-event":
 					event = self.getNewEventJson(qs);
-					print "CONSTRUCTED JSON: ", event;
-					struct = self.getEventStructure("events.json");
+					if event == "BAD": 
+						self.wfile.write("INVALID NEW EVENT REQUEST - NOT ENOUGH PARAMETERS");
+						return;
+
+					print "NEW EVENT JSON: ", event;
+
+					struct = self.readJSONFile("events.json");
+
+					# Now insert into there.  I would use filter but it's immutable.
+					for i in range(0, len(struct["categories"])):
+						print "|",struct["categories"][i]["category-name"],"|",qs["parent-category"],"|"
+						if struct["categories"][i]["category-name"] == qs["parent-category"]:
+							struct["categories"][i]["events"].insert(0, event);
+							break;
+					else:
+						self.wfile.write("INVALID NEW EVENT REQUEST - COULDN'T FIND PARENT CATEGORY");
+						return;
+
+					print "I hope that worked."
+
+					# Write it back to file.
+					self.writeJSONFile(struct, "events.json");
+
 				elif qs["arg"] == "new-category":
 					print "NEW CATEGORY COMING SOON!"
 

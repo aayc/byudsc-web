@@ -1,0 +1,10 @@
+{
+	"categories" : [{
+		"category-name": "January 2016",
+		"events" : [{
+			"name":"DSC Kickoff Meeting",
+			"date":"January 14th, 2016",
+			"content":"<p><b>Meeting recap</b><<p>We have chosen to compete in the \"Homesite Quote Conversion\" competition as a club (https://www.kaggle.com/c/homesite-quote-conversion) This data set is big enough that it will be a challenge for advanced players but also straightforward enough for beginners to learn from. It will be good for us to compete as a club so that we can all help each other out. Also, if we win, there is a $20,000 prize. This competition will end in about one month on February 8th.</p><p><b>Competition Goal before next week</b></p><p>The goal that we set as a team for the competition is the following: Experienced people: make at least one code submission, even if it's naiive and not super good. Beginners: Download the data. Play around with it. Learn about a machine learning model to prepare for next week's meeting (if you don't know what to learn about, check out 'scikit learn') </p>"
+		}]
+	}]
+}

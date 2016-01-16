@@ -114,12 +114,19 @@
     /* Don't form submit - post the data*/
     $("#new-event-form").submit(function (evt) {
       var content = editor.getValue();
-      evt.preventDefault()
+      evt.preventDefault();
+      if ($("#new-event-name").val() == "" ||
+          $("#new-event-date").val() == "" ||
+          $("#new-event-category-picker").dropdown('get text') == "Choose an Event Category") {
+        alert("Items in your Create New Event form haven't been filled out yet!");
+        return false;
+      }
       $.ajax({
         type: "POST",
         url: "event-admin.html",
         data: {
           "arg" : "new-event",
+          "parent-category": $("#new-event-category-picker").dropdown('get text'),
           "name": $("#new-event-name").val(),
           "date": $("#new-event-date").val(),
           "content": content
@@ -128,7 +135,6 @@
           console.log("Got data back from post: " + data);
         }
       })
-      // TODO post it!
       return true;
     });
 
