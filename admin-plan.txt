@@ -1,0 +1,22 @@
+Structure for Technique Admin
+
+host-technique-admin.py
+technique-admin.html
+
+The technique admin has two functions
+
+Article Creator
+
+ latex-like editor to show you what your article looks like (in an iFrame).  Has a preview and a save button.
+
+Management
+
+  shows a listbox of all categories, and the articles below them.  User has the option of deleting a category, or deleting an article, by selecting and clicking “Delete” and a confirm dialog will pop up.  If confirmed, the article is wiped out of the json.
+
+These creators read off of a json file - which is read in as a json object and stringified back to the file by Python.
+
+How to save and when to build?  run python update-techniques.py
+Also keep backups of the json file
+So is it that whenever you click save, it saves json and builds!?  probably.
+
+“Save and update website”
