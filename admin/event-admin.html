@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="css/semantic.min.css">
+<script type="text/javascript" src="js/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="js/semantic.min.js"></script>
+</head>
+
+<body>
+<div class="ui page grid">
+  <div class="row">
+    <div style="padding-top: 1em" class="column padding-reset">
+      <div class="ui huge message page center aligned grid">
+        <h1 class="ui huge header">Event Admin Panel</h1>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="ten wide column">
+      <h2><b>Create New Event</b></h2>
+      <form id="new-event-form" method="get" class="ui center aligned form">
+        <input type="hidden" name="arg" value="new_event"></input>
+        <div class="twelve wide field">
+          <label>Event Name</label>
+          <input id="new-event-name" type="text" name="name" placeholder="Example: Data Science Meeting">
+        </div>
+        <div class="twelve wide field">
+          <label>Date</label>
+          <input id="new-event-date" type="text" name="date" placeholder="Example: January 21st, 2016">
+        </div>
+        <div class="twelve wide field">
+          <label>Content</label>
+          <div id="new-event-editor" style="height: 300px; width: 40em">&lt;p&gt;HTML content (Example: Meeting this Thursday at 8:00pm)&lt;/p&gt;</div>
+        </div>
+        <button class="ui button">Save to JSON</button>
+      </form>
+    </div>
+    <div class="six wide column">
+      <h2><b>Preview</b></h2>
+      <hr>
+      <div class="ten wide column">
+        <div id="preview">
+          <h2 id="preview-title"></h2>
+          <p id="preview-date"></p>
+          <div id="preview-content">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class=" row">
+    <button class="ui red button">Update Website with JSON state</button>
+  </div>
+  <div class="row">
+     <div class="ten wide column">
+      <h2><b>Edit & Delete Events</b></h2>
+      <select name="sometext" multiple="multiple">
+        <option>text1</option>
+        <option>text2</option>
+        <option>text3</option>
+        <option>text4</option>
+        <option>text5</option>
+     </select>
+    </div>
+    <div class="six wide column">
+      <h2><b>Live Preview</b></h2>
+      <hr>
+      <div class="ten wide column">
+        <div id="preview">
+          <h2 id="preview-title"></h2>
+          <p id="preview-date"></p>
+          <div id="preview-content">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("new-event-editor");
+    editor.setTheme("ace/theme/twilight")
+    editor.getSession().setMode("ace/mode/html")
+    editor.getSession().setUseWrapMode(true);
+    function resizeAce() { return $('#editor').width($(window).width() / 16); };
+    $(window).resize(resizeAce);
+    resizeAce();
+
+    $("#new-event-form").submit(function (evt) {
+      var content = editor.getValue();
+      $('<input />').attr('type', 'hidden')
+        .attr('name', "content")
+        .attr('value', content)
+        .appendTo('#new-event-form');
+      return true;
+    });
+
+    function updateNewEventPreview () {
+      $("#preview-title").html($("#new-event-name").val());
+      $("#preview-date").html("<i>" + $("#new-event-date").val() + "</i>");
+      $("#preview-content").html(editor.getValue());
+    }
+
+    $("#new-event-name").on('change', updateNewEventPreview);
+    $("#new-event-date").on('change', updateNewEventPreview);
+    editor.getSession().on('change', updateNewEventPreview);
+    
+    updateNewEventPreview();
+
+    $('.category.example .ui.dropdown').dropdown({
+      allowCategorySelection: true
+    });
+</script>
+</body>
+
+
+<script>
+
+</script>
+
+</html>

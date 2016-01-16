@@ -1,17 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="css/semantic.min.css">
 <script type="text/javascript" src="js/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="js/semantic.min.js"></script>
 </head>
 
 <body>
-<script>
-$.get("?q=w", function (data) {
-	console.log("? data: " + data);
-}).fail(function () {
-	console.log("failed!");
-});
-</script>
+<div class="ui page grid">
+    <div class="row">
+      <div style="padding-top: 1em" class="column padding-reset">
+        <div class="ui huge message page center aligned grid">
+          <h1 class="ui huge header">BYU DSC Website Admin Panel</h1>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="seven wide column">
+        <h2><b>What problem does this solve?</b></h2>
+        <p>Editing HTML pages and knowing where to put them, and especially how to link them together, is a pain!  Write your HTML here (or write it in a text editor - vim, Sublimetext, whatever, and paste it here) and let the admin panel do the linking work for you.</p>
+        <h2><b>What's in here?</b></h2>
+        <p>There are two main modules - the Technique and Event managers (write up manager coming soon!).   The Technique manager lets you a) create articles and post them under categories, b) create and delete categories, and delete articles.  The Event manager lets you a) create events and post them under date categories, b) create and delete categories, and delete events.</p>
+        <h2><b>How does the Admin panel work, technically speaking?</b></h2>
+        <p>It's kind of a hack, to be honest.  Essentially, for each Manager, there's a JSON file that holds the structure.  For example, for the Events manager, the JSON file will have an array of category objects, each holding a series of events, etc.  <b>The JSON file and the website are not directly connected!</b> When you click "update website", <b>an HTML page will be created from the JSON file (from a template)</b>, and that new page will <b>replace</b> the current version on the site.  Your written article will also appear in the public/ folder under one of the storage folders, (technique-articles/, for example).</p>
+        <p>This is why there are both the "Save" and the "Update website" buttons.  Saving saves the JSON file, updating the website applies it.</p>
+        <h2><b>What if I lose my data?</b></h2>
+        <p>You'll want to keep back ups - this is a "I'm trusting you" system.  I provided a backup utility (backup-the-website.py) in the root folder.  Click on it and it will zip the public folder in its current state and place it under the "public-backups" folder.  As for the JSON files, there's a "backup-the-json.py" file in this directory - this will zip all the necessary json files and put them under the "json-templates-backups" folder.  Your articles will be placed in the "/admin/content/" folder, and you can only delete them explicitly here.  You can unlink them without deleting them too. </p>
+      </div>
+      <div class="one wide column"></div>
+      <div class="eight wide column">
+        <h2>Get Started</p>
+        <a href="event-admin.html" class="ui green button">Event Article Admin &raquo;</a>
+        <br /><br />
+      </div>
+  </div>
 </body>
+
+
+<script>
+
+</script>
 
 </html>
