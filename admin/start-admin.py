@@ -18,17 +18,30 @@ else:
 	PORT = 8400
 	I = ""
 
+stopCode = "STOPCODE999";
 
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 	def do_GET(self):
-		query_components = parse_qs(urlparse(self.path).query)
-		if "q" in query_components.keys():
-			self.wfile.write("<html><body><h1>hi!</h1></body></html>STOPCODE999")
-		print "GET REQUEST: Sending web page";
+		qs = parse_qs(urlparse(self.path).query)
+		'''print "GOT GET";
+		if "arg" in qs.keys():
+			print "ARG IN KEYS"
+			if qs["arg"] == "new_event":
+				print "HELLO"
+				self.wfile.write(stopCode);'''
+
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 	def do_POST(self):
+		content_len = int(self.headers.getheader('content-length', 0))
+		post_body = self.rfile.read(content_len)
+		parts = [i for i in post_body.split("!")];
+		qs = {k: v for (k, v) in [(i[0], i[1]) for i in parts[j].split("=") for j in parts]}
+		print "qs: ", qs
+		print "POST BODY: ", post_body
+		self.wfile.write("heyehyeh" + stopCode);
+		return;
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 Handler = ServerHandler

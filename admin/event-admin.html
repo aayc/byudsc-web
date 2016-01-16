@@ -22,17 +22,17 @@
         <input type="hidden" name="arg" value="new_event"></input>
         <div class="twelve wide field">
           <label>Event Name</label>
-          <input id="new-event-name" type="text" name="name" placeholder="Example: Data Science Meeting">
+          <input id="new-event-name" type="text" name="name" placeholder="Example: Data Science Meeting" value="TEST">
         </div>
         <div class="twelve wide field">
           <label>Date</label>
-          <input id="new-event-date" type="text" name="date" placeholder="Example: January 21st, 2016">
+          <input id="new-event-date" type="text" name="date" placeholder="Example: January 21st, 2016" value="TEST">
         </div>
         <div class="twelve wide field">
           <label>Content</label>
           <div id="new-event-editor" style="height: 300px; width: 40em">&lt;p&gt;HTML content (Example: Meeting this Thursday at 8:00pm)&lt;/p&gt;</div>
         </div>
-        <button class="ui button">Save to JSON</button>
+        <button class="ui button" type="submit">Save to JSON</button>
       </form>
     </div>
     <div class="six wide column">
@@ -53,14 +53,14 @@
   </div>
   <div class="row">
      <div class="ten wide column">
-      <h2><b>Edit & Delete Events</b></h2>
-      <select name="sometext" multiple="multiple">
-        <option>text1</option>
-        <option>text2</option>
-        <option>text3</option>
-        <option>text4</option>
-        <option>text5</option>
-     </select>
+      <h2><b>Edit, Delete, Reorder Events</b></h2>
+      <div id="event-picker" class="ui dropdown">
+        <div class="text">Choose an Event</div>
+        <i class="dropdown icon"></i>
+        <div id="event-picker-content" class="menu">
+          <!-- Populated by Javascript -->
+        </div>
+      </div>
     </div>
     <div class="six wide column">
       <h2><b>Live Preview</b></h2>
@@ -75,10 +75,14 @@
       </div>
     </div>
   </div>
+  <br/><br/><br/><br/><br/><br/><br/><br/>
+</div>
+
 
 
 <script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
+    /* Create and set the editor. */
     var editor = ace.edit("new-event-editor");
     editor.setTheme("ace/theme/twilight")
     editor.getSession().setMode("ace/mode/html")
@@ -87,6 +91,8 @@
     $(window).resize(resizeAce);
     resizeAce();
 
+    /* On form submit, add editor contents to request 
+        with a hidden input element */
     $("#new-event-form").submit(function (evt) {
       var content = editor.getValue();
       $('<input />').attr('type', 'hidden')
@@ -96,21 +102,51 @@
       return true;
     });
 
+
+    /* Update the preview whenever changes are made. */
     function updateNewEventPreview () {
       $("#preview-title").html($("#new-event-name").val());
       $("#preview-date").html("<i>" + $("#new-event-date").val() + "</i>");
       $("#preview-content").html(editor.getValue());
     }
-
     $("#new-event-name").on('change', updateNewEventPreview);
     $("#new-event-date").on('change', updateNewEventPreview);
     editor.getSession().on('change', updateNewEventPreview);
-    
     updateNewEventPreview();
 
-    $('.category.example .ui.dropdown').dropdown({
-      allowCategorySelection: true
-    });
+    /* Populate Edit/Delete box with current articles by reading
+    from json file. */
+    (function () {
+      $.getJSON("events.json", function (data) {
+        var dropdownHtml = "";
+        for (var i = 0; i < data["categories"].length; i++) {
+          var category = data["categories"][i];
+          dropdownHtml += "<div class=\"item\">" + category["category-name"] + " &raquo;<div class=\"menu\">"
+          for (var j = 0; j < category.events.length; j++) {
+            dropdownHtml += "<div class=\"item\">" + category.events[i].name + "</div>"
+          }
+          dropdownHtml += "</div></div>"
+        }
+        $("#event-picker-content").html(dropdownHtml);
+        $("#event-picker").dropdown({
+          maxSelections: 1
+        });
+      }).fail(function (err) {
+        console.log("Failed to fetch JSON events structure - possibly invalid JSON?");
+      });
+    })();
+
+    $.ajax({
+      type: "POST",
+      url: "event-admin.html",
+      data: {
+        "q" : "nice!",
+        "wakka":"wakka!"
+      },
+      success: function (data) {
+        console.log("Got data back from post: " + data);
+      }
+    })
 </script>
 </body>
 
