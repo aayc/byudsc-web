@@ -28,22 +28,21 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		return qs;
 
 	def getNewEventJson(self, qs):
-		print "NEW EVENT ARG DETECTED"
 		required_fields = ("parent-category", "name", "date", "content");
 		if all([x in qs for x in required_fields]):
 			return { "name": qs["name"], "date": qs["date"], "content": qs["content"] };
 		else:
 			return "BAD";
 
-	def readJSONFile(self, f):
-		with open("events.json", "r") as f:
+	def readJSONFile(self, fname):
+		with open(fname, "r") as f:
 			event_structure = json.loads(''.join(f.readlines()))
 		return event_structure
 
-	def writeJSONFile(self, data, f):
+	def writeJSONFile(self, data, fname):
 		s = json.dumps(data)
-		with open("events.json", "w") as f:
-			print "WHOA WHOA WHAO WE TRIED TO WRITE SOMETHING?"
+		with open(fname, "w") as f:
+			print "WRITING TO " + fname;
 			f.write(s);
 
 	def do_GET(self):
@@ -54,7 +53,6 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		post_body = self.rfile.read(content_len)
 		if len(post_body) > 0:
 			qs = self.decodePostBody(post_body);
-			print "QS: ", qs
 			if "arg" in qs:
 				if qs["arg"] == "new-event":
 					event = self.getNewEventJson(qs);
@@ -62,13 +60,10 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 						self.wfile.write("INVALID NEW EVENT REQUEST - NOT ENOUGH PARAMETERS");
 						return;
 
-					print "NEW EVENT JSON: ", event;
-
 					struct = self.readJSONFile("events.json");
 
 					# Now insert into there.  I would use filter but it's immutable.
 					for i in range(0, len(struct["categories"])):
-						print "|",struct["categories"][i]["category-name"],"|",qs["parent-category"],"|"
 						if struct["categories"][i]["category-name"] == qs["parent-category"]:
 							struct["categories"][i]["events"].insert(0, event);
 							break;
@@ -76,16 +71,32 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 						self.wfile.write("INVALID NEW EVENT REQUEST - COULDN'T FIND PARENT CATEGORY");
 						return;
 
-					print "I hope that worked."
-
 					# Write it back to file.
 					self.writeJSONFile(struct, "events.json");
 
+					self.wfile.write("NEW_EVENT_SUCCESS");
+					return;
 				elif qs["arg"] == "new-category":
-					print "NEW CATEGORY COMING SOON!"
+					if "name" not in qs or qs["name"] == "":
+						self.wfile.write("INVALID NEW CATEGORY REQUEST |MISSING NAME");
+						return;
 
-				return;
-		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+					struct = self.readJSONFile("events.json");
+					for i in range(0, len(struct["categories"])):
+						if struct["categories"][i]["category-name"] == qs["name"]:
+							self.wfile.write("INVALID NEW CATEGORY REQUEST |CATEGORY ALREADY EXISTS");
+							return;
+					else:
+						struct["categories"].insert(0, {
+							"category-name": qs["name"],
+							"events": []
+						});
+						self.writeJSONFile(struct, "events.json");
+						self.wfile.write("NEW_CATEGORY_SUCCESS");
+				else:
+					self.wfile.write("UNKNOWN COMMAND");
+		else:
+			self.wfile.write("MISSING COMMAND")
 
 Handler = ServerHandler
 

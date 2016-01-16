@@ -121,6 +121,7 @@
         alert("Items in your Create New Event form haven't been filled out yet!");
         return false;
       }
+      console.log("HEY");
       $.ajax({
         type: "POST",
         url: "event-admin.html",
@@ -176,8 +177,10 @@
           var category = data["categories"][i];
           editorDropdownHtml += "<div class=\"item\">" + category["category-name"] + " &raquo;<div class=\"menu\">"
           newDropdownHtml += "<div class=\"item\">" + category["category-name"] + "</div>"
+          console.log("CATEGORY: " + category["category-name"] + " # " + category.events.length);
           for (var j = 0; j < category.events.length; j++) {
-            editorDropdownHtml += "<div class=\"item\">" + category.events[i].name + "</div>"
+            console.log("READING " + category["category-name"])
+            editorDropdownHtml += "<div class=\"item\">" + category.events[j].name + "</div>"
           }
           editorDropdownHtml += "</div></div>"
         }
