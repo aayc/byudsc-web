@@ -2,20 +2,26 @@ Thank you for opening this file!  If you're not a developer of the website, you 
 
 Frequently Asked Questions
 
-1.  Why aren't you using AngularJS or React?  Why Jquery?
+How do I run this thing!?!
 
-Because I intend this website to be relatively simple.  This isn't a webapp, this is a website.  Lighter, cleaner, simpler, easier to debug, easier to work with.
+Depends on what you want to run.  If you want to run the actual website, make sure you have nodejs installed and that node is on your path.  Then, if you just cloned the git repository, type "npm install" in the terminal in the root folder of this project.  That will give you all the dependencies.  Finally, type "node index.js" and it's running at localhost:4004.  Type localhost:4004 into web browser.
 
-2.  What is this semantic stuff?
+If you want to run the Admin panel, you DON'T NEED NODE, you only need Python.  This is because I assumed a lot of you Python guys wouldn't have node but many people have Python, so you can edit articles and events w/o node.  You can just run the start-admin.py file and it'll start the server.  Nice and easy.
+
+Why aren't you using AngularJS or React?  Why Jquery?
+
+Because I intend this website to be relatively simple.  This isn't a webapp, this is a website.  Lighter, cleaner, easier to debug.  The admin panel might have needed some framework though, it gets pretty hairy in there :-/
+
+What is this semantic stuff?
 
 Semantic UI is a CSS framework that makes things look pretty and helps organize the HTML.  I felt that this was a worthwhile addition, and it's fairly lightweight.  If you want to establish a new theme, read the docs.  Note that you'll need a globally installed Nodejs (including npm) and gulp.  Gulp also requires a local install too (I know, it's lame.  Sorry.)
 
 If you want to rebuild the dist css, enter the semantic directory and type "gulp build".  I was new to Semantic, so everything I know is in the docs.  They're not bad.
 
-3.  Why not Python for the backend?
+Why not Python for the backend?
 
 I know most of the team knows python, so I heavily considered using Django for this website.  But I figured that a higher proportion of web people know Javascript than proportion of python people in DSC club know websites with Python.
 
-4.  Who are you?  How do I reach you?
+Who are you?  How do I reach you?
 
 My name is Aaron Chan, I'm a junior (secretly a freshman) at BYU, and I'm probably on a mission right now, otherwise I'd be the one maintaining the website.  Sorry.  I'm trying to write everything I know into documentation like this.  Jacob (head of DSC club atm) will probably be well-informed about this by myself, but he's graduating.  Hopefully the code is clear enough for you.  I tried to make it as semantic and logical as possible.

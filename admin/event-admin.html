@@ -19,9 +19,9 @@
     <div class="ten wide column">
       <h2><b>Create New Event Category</b></h2>
       <div class="ui input">
-        <input id="new-category-name" type="text" name="name" placeholder="Example: February 2016" value="TEST">
+        <input id="new-category-name" type="text" name="name" placeholder="Example: February 2016">
       </div>
-      <button id="new-category-submit" class="ui blue button">Save this category to JSON</button> <!-- TODO - WHAT IF THE NAME ALREADY EXISTS? -->
+      <button id="new-category-submit" class="ui blue button">Save this category to JSON</button>
     </div>
   </div>
   <div class="row">
@@ -68,7 +68,6 @@
     </div>
   </div>
   <div class=" row">
-    <button class="ui red button">Update Website with JSON state</button>
   </div>
   <div class="row">
      <div class="ten wide column">
@@ -77,10 +76,12 @@
         <div class="text">Choose an Event</div>
         <i class="dropdown icon"></i>
         <div id="event-picker-content" class="menu">
-          <div class="item">Thing!</div>
           <!-- Populated by Javascript -->
         </div>
       </div>
+      <br /><br />
+      <button id="edit-event" class="ui green button">Edit</button>
+      <button id="delete-event" class="ui red button">Delete</button>
     </div>
     <div class="six wide column">
       <h2><b>Live Preview</b></h2>
@@ -107,9 +108,6 @@
     editor.setTheme("ace/theme/twilight")
     editor.getSession().setMode("ace/mode/html")
     editor.getSession().setUseWrapMode(true);
-    function resizeAce() { return $('#editor').width($(window).width() / 16); };
-    $(window).resize(resizeAce);
-    resizeAce();
 
     /* Don't form submit - post the data*/
     $("#new-event-form").submit(function (evt) {
@@ -121,7 +119,6 @@
         alert("Items in your Create New Event form haven't been filled out yet!");
         return false;
       }
-      console.log("HEY");
       $.ajax({
         type: "POST",
         url: "event-admin.html",
@@ -133,7 +130,7 @@
           "content": content
         },
         success: function (data) {
-          console.log("Got data back from post: " + data);
+          alert(data);
         }
       })
       return true;
@@ -150,10 +147,34 @@
             "name": $("#new-category-name").val()
           },
           success: function (data) {
-            console.log("Got data back from post after submitting category name: " + data);
+            alert(data);
           }
         });
       }
+    });
+
+    $("#delete-event").click(function () {
+      var selected = $("#event-picker").dropdown('get text');
+      if (selected == "Choose an Event") return;
+      if (confirm("Are you sure you want to delete the event " + selected + "?")) {
+        $.ajax({
+          type: "POST",
+          url: "event-admin.html",
+          data: {
+            "arg" : "delete-event",
+            "name" : selected // TODO ADD DUPLICATE EVENT DETECTION EVERYWHERE...OR STRATIFY BY CATEGORY.
+          },
+          success: function (data) {
+            alert(data);
+          }
+        })
+      }
+    });
+
+    $("#edit-event").click(function () {
+      console.log($("#event-picker-content[class='item']").filter(function(t){return true;}))//t.html() == 'DSC Kickoff Meeting'}))
+      //$("#event-picker-content :.item").find( "li" )
+      console.log($("#event-picker").dropdown('get item'), 'DSC Kickoff Meeting');
     })
 
     /* Update the preview whenever changes are made. */
@@ -177,11 +198,8 @@
           var category = data["categories"][i];
           editorDropdownHtml += "<div class=\"item\">" + category["category-name"] + " &raquo;<div class=\"menu\">"
           newDropdownHtml += "<div class=\"item\">" + category["category-name"] + "</div>"
-          console.log("CATEGORY: " + category["category-name"] + " # " + category.events.length);
-          for (var j = 0; j < category.events.length; j++) {
-            console.log("READING " + category["category-name"])
+          for (var j = 0; j < category.events.length; j++)
             editorDropdownHtml += "<div class=\"item\">" + category.events[j].name + "</div>"
-          }
           editorDropdownHtml += "</div></div>"
         }
         $("#event-picker-content").html(editorDropdownHtml);
@@ -193,14 +211,32 @@
       });
     }
     populateDropdowns();
-
     
 </script>
+
+<!--Modals-->
+<div id="custom-modal" class="ui basic modal">
+  <i class="close icon"></i>
+  <div id="modal-header" class="header">
+    Sample Header
+  </div>
+  <div class="image content">
+    <div id="modal-description" class="description">
+      <p>Sample Description</p>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="two ui inverted buttons">
+      <div class="ui red basic inverted button">
+        <i class="remove icon"></i>
+        No
+      </div>
+      <div class="ui green basic inverted button">
+        <i class="checkmark icon"></i>
+        Yes
+      </div>
+    </div>
+  </div>
+</div>
 </body>
-
-
-<script>
-
-</script>
-
 </html>

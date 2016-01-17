@@ -15,6 +15,7 @@
   "homepage": "https://bitbucket.org/thatnerd2/byudsc-web#readme",
   "dependencies": {
     "better-console": "^0.2.4",
+    "body-parser": "^1.14.2",
     "del": "^2.2.0",
     "express": "^4.13.3",
     "extend": "^3.0.0",
