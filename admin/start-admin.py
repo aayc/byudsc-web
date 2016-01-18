@@ -45,6 +45,69 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 			print "WRITING TO " + fname;
 			f.write(s);
 
+	def handleNewEvent(self, qs):
+		event = self.getNewEventJson(qs);
+		if event == "BAD": 
+			self.wfile.write("INVALID NEW EVENT REQUEST | NOT ENOUGH PARAMETERS");
+			return;
+
+		struct = self.readJSONFile("events.json");
+
+		# Now insert into there.  I would use filter but it's immutable.
+		for i in range(0, len(struct["categories"])):
+			if struct["categories"][i]["category-name"] == qs["parent-category"]:
+				struct["categories"][i]["events"].insert(0, event);
+				break;
+		else:
+			self.wfile.write("INVALID NEW EVENT REQUEST | COULDN'T FIND PARENT CATEGORY");
+			return;
+
+		# Write it back to file.
+		self.writeJSONFile(struct, "events.json");
+		self.wfile.write("NEW_EVENT_SUCCESS");
+
+	def handleNewCategory(self, qs):
+		if "name" not in qs or qs["name"] == "":
+			self.wfile.write("INVALID NEW CATEGORY REQUEST | MISSING NAME");
+			return;
+
+		struct = self.readJSONFile("events.json");
+		categoryNames = {i["category-name"] for i in struct["categories"]};
+		if qs["name"] in categoryNames:
+			self.wfile.write("INVALID NEW CATEGORY REQUEST | CATEGORY ALREADY EXISTS");
+			return;
+		else:
+			struct["categories"].insert(0, {
+				"category-name": qs["name"],
+				"events": []
+			});
+			self.writeJSONFile(struct, "events.json");
+			self.wfile.write("NEW_CATEGORY_SUCCESS");
+
+	def handleDeleteEvent (self, qs):
+		if "event-name" not in qs or "event-category" not in qs:
+			self.wfile.write("INVALID DELETE EVENT REQUEST | MISSING NAME");
+			return;
+
+		# search for and modify json structure
+		struct = self.readJSONFile("events.json");
+		for i in range(0, len(struct["categories"])):
+			if struct["categories"][i]["category-name"] == qs["event-category"]:
+				print "Found category ", qs["event-category"];
+				for j in range(0, len(struct["categories"][i]["events"])):
+					if struct["categories"][i]["events"][j]["name"] == qs["event-name"]:
+						del struct["categories"][i]["events"][j];
+						self.writeJSONFile(struct, "events.json");
+						self.wfile.write("DELETE_EVENT_SUCCESS");
+						break;
+				else:
+					self.wfile.write("INVALID DELETE EVENT REQUEST | COULDN'T FIND SPECIFIED EVENT");
+					return;
+				break;
+		else:
+			self.wfile.write("INVALID DELETE EVENT REQUEST | COULDN'T FIND SPECIFIED PARENT CATEGORY");
+			return;
+
 	def do_GET(self):
 		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
@@ -55,42 +118,11 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 			qs = self.decodePostBody(post_body);
 			if "arg" in qs:
 				if qs["arg"] == "new-event":
-					event = self.getNewEventJson(qs);
-					if event == "BAD": 
-						self.wfile.write("INVALID NEW EVENT REQUEST | NOT ENOUGH PARAMETERS");
-						return;
-
-					struct = self.readJSONFile("events.json");
-
-					# Now insert into there.  I would use filter but it's immutable.
-					for i in range(0, len(struct["categories"])):
-						if struct["categories"][i]["category-name"] == qs["parent-category"]:
-							struct["categories"][i]["events"].insert(0, event);
-							break;
-					else:
-						self.wfile.write("INVALID NEW EVENT REQUEST | COULDN'T FIND PARENT CATEGORY");
-						return;
-
-					# Write it back to file.
-					self.writeJSONFile(struct, "events.json");
-					self.wfile.write("NEW_EVENT_SUCCESS");
+					self.handleNewEvent(qs);
 				elif qs["arg"] == "new-category":
-					if "name" not in qs or qs["name"] == "":
-						self.wfile.write("INVALID NEW CATEGORY REQUEST | MISSING NAME");
-						return;
-
-					struct = self.readJSONFile("events.json");
-					for i in range(0, len(struct["categories"])):
-						if struct["categories"][i]["category-name"] == qs["name"]:
-							self.wfile.write("INVALID NEW CATEGORY REQUEST | CATEGORY ALREADY EXISTS");
-							return;
-					else:
-						struct["categories"].insert(0, {
-							"category-name": qs["name"],
-							"events": []
-						});
-						self.writeJSONFile(struct, "events.json");
-						self.wfile.write("NEW_CATEGORY_SUCCESS");
+					self.handleNewCategory(qs);
+				elif qs["arg"] == "delete-event":
+					self.handleDeleteEvent(qs);
 				else:
 					self.wfile.write("UNKNOWN COMMAND");
 		else:

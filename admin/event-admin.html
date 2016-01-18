@@ -71,9 +71,10 @@
   </div>
   <div class="row">
      <div class="ten wide column">
-      <h2><b>Edit, Delete, Reorder Events</b></h2>
+      <h2><b>Edit, Delete, Reorder Events & Categories</b></h2>
+      <h4>To edit/delete a category, leave the event dropdown blank</h4>
       <div id="category-picker" class="ui dropdown">
-        <div class="text">Choose an Category</div>
+        <div id="category-picker-text" class="text">Choose an Event Category</div>
         <i class="dropdown icon"></i>
         <div id="category-picker-content" class="menu">
           <!-- Populated by Javascript -->
@@ -81,7 +82,7 @@
       </div>
 
       <div style="padding-left: 10px;" id="event-picker" class="ui dropdown">
-        <div class="text">Choose an Event</div>
+        <div id="event-picker-text" class="text">Choose an Event</div>
         <i class="dropdown icon"></i>
         <div id="event-picker-content" class="menu">
           <!-- Populated by Javascript -->
@@ -113,7 +114,6 @@
 <script>
     var stopCode = "STOPCODE999";
     var EVENT_DATA = null;
-    $.getJSON("events.json", function (data) { EVENT_DATA = data; });
 
     /* Create and set the editor. */
     var editor = ace.edit("new-event-editor");
@@ -121,10 +121,20 @@
     editor.getSession().setMode("ace/mode/html")
     editor.getSession().setUseWrapMode(true);
 
+    /* Update the preview whenever changes are made. */
+    function updateNewEventPreview () {
+      $("#preview-title").html($("#new-event-name").val());
+      $("#preview-date").html("<i>" + $("#new-event-date").val() + "</i>");
+      $("#preview-content").html(editor.getValue());
+    }
+    $("#new-event-name").on('change', updateNewEventPreview);
+    $("#new-event-date").on('change', updateNewEventPreview);
+    editor.getSession().on('change', updateNewEventPreview);
+    updateNewEventPreview();
+
     /* Don't form submit - post the data*/
-    $("#new-event-form").submit(function (evt) {
+    function newEventListener () {
       var content = editor.getValue();
-      evt.preventDefault();
       if ($("#new-event-name").val() == "" ||
           $("#new-event-date").val() == "" ||
           $("#new-event-category-picker").dropdown('get text') == "Choose an Event Category") {
@@ -148,16 +158,13 @@
           alert("Error from server: " + JSON.stringify(data));
         },
         complete: function (data) {
-          $("#new-event-name").attr("value", "");
-          $("#new-event-date").attr("value", "");
-          editor.setValue("");
+          window.location.reload(false); 
         }
-      })
+      });
       return true;
-    });
+    }
 
-    /* Submitting a new category name is also a post */
-    $("#new-category-submit").click(function () {
+    function newCategory () {
       if (confirm("Are you sure you want to create the category " + $("#new-category-name").val() + "?")) {
         $.ajax({
           type: "POST",
@@ -173,22 +180,21 @@
             alert("No response from server - better check the website");
           },
           complete: function (data) {
-            $("#new-category-name").html("");
+            window.location.reload(false); 
           }
         });
       }
-    });
+    }
 
-    $("#delete-event").click(function () {
-      var selected = $("#event-picker").dropdown('get text');
-      if (selected == "Choose an Event") return;
-      if (confirm("Are you sure you want to delete the event " + selected + "?")) {
+    function deleteEvent (categoryName, eventName) {
+      if (confirm("Are you sure you want to delete the event " + eventName + "?")) {
         $.ajax({
           type: "POST",
           url: "event-admin.html",
           data: {
             "arg" : "delete-event",
-            "name" : selected // TODO ADD DUPLICATE EVENT DETECTION EVERYWHERE...OR STRATIFY BY CATEGORY.
+            "event-name" : eventName,
+            "event-category": categoryName
           },
           success: function (data) {
             alert("Response from server: " + data.split(stopCode)[0]);
@@ -197,31 +203,23 @@
             alert("No response from server - better check the website");
           },
           complete: function (data) {
-            
+            window.location.reload(false);
           }
         })
       }
-    });
+    }
 
-    $("#edit-event").click(function () {
+    function deleteCategory (categoryName) {
+      console.log("called delete category")
+    }
+
+    function editEvent () {
       console.log($("#event-picker-content[class='item']").filter(function(t){return true;}))//t.html() == 'DSC Kickoff Meeting'}))
       //$("#event-picker-content :.item").find( "li" )
       console.log($("#event-picker").dropdown('get item'), 'DSC Kickoff Meeting');
-    })
-
-    /* Update the preview whenever changes are made. */
-    function updateNewEventPreview () {
-      $("#preview-title").html($("#new-event-name").val());
-      $("#preview-date").html("<i>" + $("#new-event-date").val() + "</i>");
-      $("#preview-content").html(editor.getValue());
     }
-    $("#new-event-name").on('change', updateNewEventPreview);
-    $("#new-event-date").on('change', updateNewEventPreview);
-    editor.getSession().on('change', updateNewEventPreview);
-    updateNewEventPreview();
 
-    /* Populate Edit/Delete box with current articles by reading
-    from json file. */
+
     function getCategoriesAsItems (data) {
       return data.categories.reduce(function (x, y) {
         return x + "<div class=\"item\">" + y["category-name"] + "</div>";
@@ -230,37 +228,50 @@
 
     function getItemsFromCategory (data, categoryName) {
       // Assume that categories are unique.
-      var matches = data["categories"].filter(function (x) { return x["category-name"] == categoryName; });
+      var matches = data["categories"].filter(function (x) { return x["category-name"].toLowerCase() == categoryName.toLowerCase(); });
       if (matches.length != 1) return "ERROR: " + matches.length + " MATCHES";
       return matches[0]["events"].reduce(function (x, y) {
         return x + "<div class=\"item\">" + y.name + "</div>"
       }, "");
     }
 
-    function 
+    function loadEverything () {
+      $.getJSON("events.json", function (data) { 
+        EVENT_DATA = data;
+        var categoriesHtml = getCategoriesAsItems(EVENT_DATA);
+        $("#new-event-category-picker-content").html(categoriesHtml);
+        $("#new-event-category-picker").dropdown({ maxSelections: 1 });
 
-    populateDropdowns = function () {
-      $.getJSON("events.json", function (data) {
-        var editorDropdownHtml = "";
-        var newDropdownHtml = "";
-        for (var i = 0; i < data["categories"].length; i++) {
-          var category = data["categories"][i];
-          editorDropdownHtml += "<div class=\"item\">" + category["category-name"] + " &raquo;<div class=\"menu\">"
-          newDropdownHtml += "<div class=\"item\">" + category["category-name"] + "</div>"
-          for (var j = 0; j < category.events.length; j++)
-            editorDropdownHtml += "<div class=\"item\">" + category.events[j].name + "</div>"
-          editorDropdownHtml += "</div></div>"
-        }
-        $("#event-picker-content").html(editorDropdownHtml);
-        $("#event-picker").dropdown({ maxSelections: 1 });
-        $("#new-event-category-picker-content").html(newDropdownHtml);
-        $("#new-event-category-picker").dropdown({ maxSelections: 1});
-      }).fail(function (err) {
-        console.log("Failed to fetch JSON events structure - possibly invalid JSON?");
-      });
+        $("#category-picker-content").html(categoriesHtml);;
+        $("#category-picker").dropdown({ 
+          maxSelections: 1,
+          onChange: function (newValue) {
+            $("#event-picker-text").html("Choose an Event");
+            $("#event-picker-content").html(getItemsFromCategory(EVENT_DATA, newValue));
+            $("#event-picker").dropdown({ maxSelections: 1 });
+          }
+        });
+      });  
     }
-    populateDropdowns();
-    
+
+    $("#new-event-form").submit(function (evt) {
+      evt.preventDefault();
+      return newEventListener();
+    });
+    $("#new-category-submit").click(newCategory);
+    $("#delete-event").click(function () {
+      var evt = $("#event-picker").dropdown('get text');
+      var cat = $("#category-picker").dropdown('get text');
+      if (evt != "Choose an Event" && cat != "Choose an Event Category") {
+        deleteEvent(cat, evt);
+      } else if (evt == "Choose an Event" && cat != "Choose an Event Category") {
+        deleteCategory(cat);
+      } else {
+        return;
+      }
+    });
+    $("#edit-event").click(editEvent);
+    loadEverything();  
 </script>
 
 <!--Modals-->
