@@ -8,7 +8,6 @@ app.use( bodyParser.json() );
 app.use(express.static('public'));
 
 app.post('/get-events', function(req, res) {
-    console.log("Posted to get events");
     var eventsFileContents = JSON.parse(fs.readFileSync('admin/events.json', 'utf8'));
     res.send(eventsFileContents);
 });

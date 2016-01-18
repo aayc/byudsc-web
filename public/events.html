@@ -19,89 +19,68 @@
     <div class="row">
 
       <div class="ui vertical menu">
-        <center><a href="index.html" class="ui blue button">&laquo; Home</a></center>
+        <a href="index.html" class="ui blue button">&laquo; Home</a>
         <div id="menu-injection">
-        <!--<div class="item">
-          <div class="header">January 2016 (newest goes here)</div>
-          <div class="menu">
-            <a class="item">Meeting</a>
-            <a class="item">Data Science Club Kickoff</a>
-          </div>
+        <!-- Populated with Javascript-->
         </div>
-        <div class="item">
-          <div class="header">(Older...)</div>
-          <div class="menu">
-            <a class="item">...</a>
-            <a class="item">...</a>
-            <a class="item">...</a>
-          </div>
-        </div>
-        <div class="item">
-          <div class="header">(Even older...)</div>
-          <div class="menu">
-            <a class="item">....</a>
-            <a class="item">....</a>
-          </div>
-        </div>
-        <div class="item">
-          <div class="header">(x months old...)</div>
-          <div class="menu">
-            <a class="item">...</a>
-            <a class="item">...</a>
-          </div>
-        </div>-->
-        </div>
+        <button id="see-all-events" class="ui green button">See All</button>
       </div>
       <div class="two wide column"></div>
       <div id="event-list" class="ten wide column">
-        <!--<h1>Meeting</h1>
-        <p><i>January 21st, 2016</i></p>
-        <p>Will be held in XXX TMCB at 8:00pm.  Be there to discuss approaches to the "Homesite Quote Conversion" problem!</p>
-        <hr></hr>
-        <div>
-          <h2>Data Science Club Kickoff</h2>
-          <p><i>January 14st, 2016</i></p>
-          <p><b>Meeting recap</b></p>
-          <p>We have chosen to compete in the "Homesite Quote Conversion" competition as a club (https://www.kaggle.com/c/homesite-quote-conversion) This data set is big enough that it will be a challenge for advanced players but also straightforward enough for beginners to learn from. It will be good for us to compete as a club so that we can all help each other out. Also, if we win, there is a $20,000 prize. This competition will end in about one month on February 8th.</p>
-
-          <p><b>Competition Goal before next week</b></p>
-
-          <p>The goal that we set as a team for the competition is the following: 
-          Experienced people: make at least one code submission, even if it's naiive and not super good. 
-          Beginners: Download the data. Play around with it. Learn about a machine learning model to prepare for next week's meeting (if you don't know what to learn about, check out 'scikit learn') </p>
-        </div>-->
+        <!-- Populated with Javascript -->
       </div>
     </div>
   </div>
 </body>
 <script>
-  $('.ui.form')
-  .form({
-    fields: {
-      'name'            : 'empty',
-      'email-address'   : 'empty',
-      'subject'         : 'empty',
-      'message'         : 'empty'
-    }
-  });
+  var EVENT_DATA = null;
 
-  $.post("/get-events", function (data) {
+  function eventToHtml (eventObj) {
+    var eventHtml = "";
+    eventHtml += "<h1>" + eventObj.name + "</h1>"
+    eventHtml += "<p><i>" + eventObj.date + "</i></p>"
+    eventHtml += "<div>" + eventObj.content + "</div>"
+    eventHtml += "<hr>";
+    return eventHtml;
+  }
+
+  function writeAllJson (data) {
     var navHtml = "";
     var eventHtml = "";
     for (var i = 0; i < data["categories"].length; i++) {
       var category = data["categories"][i];
       navHtml += '<div class="item"><div class="header">' + category["category-name"] + '</div><div class="menu">'
       for (var j = 0; j < category["events"].length; j++) {
-        navHtml += '<a class="item">' + category["events"][j].name + '</a>';
-        eventHtml += "<h1>" + category["events"][j].name + "</h1>"
-        eventHtml += "<p><i>" + category["events"][j].date + "</i></p>"
-        eventHtml += "<div>" + category["events"][j].content + "</div>"
-        eventHtml += "<hr>";
+        navHtml += '<a class="event-link item">' + category["events"][j].name + '</a>';
+        eventHtml += eventToHtml(category["events"][j]);
       }
       navHtml += "</div></div>";
     }
     $("#menu-injection").html(navHtml);
     $("#event-list").html(eventHtml);
+    $(".event-link").on('click', function () {
+      var categoryName = $(this).closest(".menu").parent().children(".header").html();
+      for (var i = 0; i < data["categories"].length; i++) {
+        if (data["categories"][i]["category-name"] == categoryName) {
+          var category = data["categories"][i];
+          for (var j = 0; j < category.events.length; j++) {
+            if (category.events[j].name == $(this).html()) {
+              var eventHtml = eventToHtml(category.events[j]);
+              $("#event-list").html(eventHtml);
+              return;
+            }
+          }
+        }
+      }
+      $("#event-list").html("Sorry, we couldn't find the event " + $(this).html());
+    });
+  }
+
+  $("#see-all-events").click(function () { writeAllJson(EVENT_DATA); });
+
+  $.post("/get-events", function (data) {
+    EVENT_DATA = data;
+    writeAllJson(data);
   });
 </script>
 </html>

@@ -57,7 +57,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 				if qs["arg"] == "new-event":
 					event = self.getNewEventJson(qs);
 					if event == "BAD": 
-						self.wfile.write("INVALID NEW EVENT REQUEST - NOT ENOUGH PARAMETERS");
+						self.wfile.write("INVALID NEW EVENT REQUEST | NOT ENOUGH PARAMETERS");
 						return;
 
 					struct = self.readJSONFile("events.json");
@@ -68,23 +68,21 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 							struct["categories"][i]["events"].insert(0, event);
 							break;
 					else:
-						self.wfile.write("INVALID NEW EVENT REQUEST - COULDN'T FIND PARENT CATEGORY");
+						self.wfile.write("INVALID NEW EVENT REQUEST | COULDN'T FIND PARENT CATEGORY");
 						return;
 
 					# Write it back to file.
 					self.writeJSONFile(struct, "events.json");
-
 					self.wfile.write("NEW_EVENT_SUCCESS");
-					return;
 				elif qs["arg"] == "new-category":
 					if "name" not in qs or qs["name"] == "":
-						self.wfile.write("INVALID NEW CATEGORY REQUEST |MISSING NAME");
+						self.wfile.write("INVALID NEW CATEGORY REQUEST | MISSING NAME");
 						return;
 
 					struct = self.readJSONFile("events.json");
 					for i in range(0, len(struct["categories"])):
 						if struct["categories"][i]["category-name"] == qs["name"]:
-							self.wfile.write("INVALID NEW CATEGORY REQUEST |CATEGORY ALREADY EXISTS");
+							self.wfile.write("INVALID NEW CATEGORY REQUEST | CATEGORY ALREADY EXISTS");
 							return;
 					else:
 						struct["categories"].insert(0, {
@@ -96,7 +94,10 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 				else:
 					self.wfile.write("UNKNOWN COMMAND");
 		else:
-			self.wfile.write("MISSING COMMAND")
+			self.wfile.write("MISSING COMMAND");
+		self.wfile.write(stopCode);
+		SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+
 
 Handler = ServerHandler
 

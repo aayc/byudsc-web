@@ -41,11 +41,11 @@
         </div>
         <div class="twelve wide field">
           <label>Event Name</label>
-          <input id="new-event-name" type="text" name="name" placeholder="Example: Data Science Meeting" value="TEST">
+          <input id="new-event-name" type="text" name="name" placeholder="Example: Data Science Meeting" value="">
         </div>
         <div class="twelve wide field">
           <label>Date</label>
-          <input id="new-event-date" type="text" name="date" placeholder="Example: January 21st, 2016" value="TEST">
+          <input id="new-event-date" type="text" name="date" placeholder="Example: January 21st, 2016" value="">
         </div>
         <div class="twelve wide field">
           <label>Content</label>
@@ -72,7 +72,15 @@
   <div class="row">
      <div class="ten wide column">
       <h2><b>Edit, Delete, Reorder Events</b></h2>
-      <div id="event-picker" class="ui dropdown">
+      <div id="category-picker" class="ui dropdown">
+        <div class="text">Choose an Category</div>
+        <i class="dropdown icon"></i>
+        <div id="category-picker-content" class="menu">
+          <!-- Populated by Javascript -->
+        </div>
+      </div>
+
+      <div style="padding-left: 10px;" id="event-picker" class="ui dropdown">
         <div class="text">Choose an Event</div>
         <i class="dropdown icon"></i>
         <div id="event-picker-content" class="menu">
@@ -84,7 +92,7 @@
       <button id="delete-event" class="ui red button">Delete</button>
     </div>
     <div class="six wide column">
-      <h2><b>Live Preview</b></h2>
+      <h2><b>Preview</b></h2>
       <hr>
       <div class="ten wide column">
         <div id="preview">
@@ -103,6 +111,10 @@
 
 <script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
+    var stopCode = "STOPCODE999";
+    var EVENT_DATA = null;
+    $.getJSON("events.json", function (data) { EVENT_DATA = data; });
+
     /* Create and set the editor. */
     var editor = ace.edit("new-event-editor");
     editor.setTheme("ace/theme/twilight")
@@ -130,7 +142,15 @@
           "content": content
         },
         success: function (data) {
-          alert(data);
+          alert("Response from server: " + data.split(stopCode)[0]);
+        },
+        error: function (data) {
+          alert("Error from server: " + JSON.stringify(data));
+        },
+        complete: function (data) {
+          $("#new-event-name").attr("value", "");
+          $("#new-event-date").attr("value", "");
+          editor.setValue("");
         }
       })
       return true;
@@ -147,7 +167,13 @@
             "name": $("#new-category-name").val()
           },
           success: function (data) {
-            alert(data);
+            alert("Response from server: " + data.split(stopCode)[0]);
+          },
+          error: function (data) {
+            alert("No response from server - better check the website");
+          },
+          complete: function (data) {
+            $("#new-category-name").html("");
           }
         });
       }
@@ -165,7 +191,13 @@
             "name" : selected // TODO ADD DUPLICATE EVENT DETECTION EVERYWHERE...OR STRATIFY BY CATEGORY.
           },
           success: function (data) {
-            alert(data);
+            alert("Response from server: " + data.split(stopCode)[0]);
+          },
+          error: function (data) {
+            alert("No response from server - better check the website");
+          },
+          complete: function (data) {
+            
           }
         })
       }
@@ -190,6 +222,23 @@
 
     /* Populate Edit/Delete box with current articles by reading
     from json file. */
+    function getCategoriesAsItems (data) {
+      return data.categories.reduce(function (x, y) {
+        return x + "<div class=\"item\">" + y["category-name"] + "</div>";
+      }, "");
+    }
+
+    function getItemsFromCategory (data, categoryName) {
+      // Assume that categories are unique.
+      var matches = data["categories"].filter(function (x) { return x["category-name"] == categoryName; });
+      if (matches.length != 1) return "ERROR: " + matches.length + " MATCHES";
+      return matches[0]["events"].reduce(function (x, y) {
+        return x + "<div class=\"item\">" + y.name + "</div>"
+      }, "");
+    }
+
+    function 
+
     populateDropdowns = function () {
       $.getJSON("events.json", function (data) {
         var editorDropdownHtml = "";
