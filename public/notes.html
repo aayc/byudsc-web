@@ -15,7 +15,7 @@
     <div class="row">
       <div style="padding-top: 1em" class="column padding-reset">
         <div class="ui huge message page center aligned grid">
-          <h1 class="ui huge header">Techniques</h1>
+          <h1 class="ui huge header">Notes</h1>
         </div>
       </div>
     </div>
@@ -78,7 +78,7 @@
         $("#inject-here").html("<div class=\"ui page grid\">Sorry, we couldn't find the article \"" + $(this).html() + "\".  Please contact us to let us know.</div>");
       } 
       else {
-        $.get("technique-articles/" + contentAddress, function (content) {
+        $.get("notes-articles/" + contentAddress, function (content) {
           /* Bold the current article */
           if (previousActiveArticle !== null) previousActiveArticle.removeClass("active");
           $(this).addClass("active");
