@@ -37,6 +37,7 @@
           Classification
           <i class="dropdown icon"></i>
           <div class="menu">
+            <div class="article item" content-link="log-reg.html">Logarithmic Regression</div>
             <div class="article item">Simple Neural Networks</div>
             <div class="article item">Recurrent Neural Networks</div>
             <div class="article item">Clustering</div>
@@ -62,13 +63,20 @@
       </div>
     </div>
     <div class="row"></div>
-    <div id="inject-here" class="ui row">
+    <div id="inject-here" class="ui twelve wide column">
     </div>
     </div>
   </div>
 </body>
 <script>
   $(document).ready(function () {
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+      }
+    });
     /* When an article title is clicked, it is bolded, and the previously bolded title is unbolded. */
     var previousActiveArticle = null;
     $(".article").click(function () {
@@ -86,6 +94,7 @@
 
           /* Inject the HTML */
           $("#inject-here").html(content);
+
           MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
         })
         .fail(function () {
