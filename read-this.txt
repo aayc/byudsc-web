@@ -4,13 +4,23 @@ Frequently Asked Questions
 
 How do I run this thing!?!
 
-Depends on what you want to run.  If you want to run the actual website, make sure you have nodejs installed and that node is on your path.  Then, if you just cloned the git repository, type "npm install" in the terminal in the root folder of this project.  That will give you all the dependencies.  Finally, type "node index.js" and it's running at localhost:4004.  Type localhost:4004 into web browser.
+To run the website:  go to your terminal, cd to the root directory (with index.js in it) and type “node index.js”.  Navigate to localhost:4004 and you will arrive at the website.
 
-If you want to run the Admin panel, you DON'T NEED NODE, you only need Python.  This is because I assumed a lot of you Python guys wouldn't have node but many people have Python, so you can edit articles and events w/o node.  You can just run the start-admin.py file and it'll start the server.  Nice and easy.
+How do I add a new event to the page?
+
+There’s a google spreadsheet in the byu.dsc@gmail.com account.  Post your event in there, make sure it’s valid HTML in the content page.
+
+Why is the events page so slow?
+
+Because it’s authenticating into the Google Spreadsheets API.  I used to keep a raw JSON file but it’s hard to update, and fragile.  That’s what the admin was for. 
+
+What is admin-OLD?
+
+It was an experiment to have really fast events page loading, where people could edit and delete and add events to the page.  It was getting too complicated though, so I decided to use Google Spreadsheets API.
 
 Why aren't you using AngularJS or React?  Why Jquery?
 
-Because I intend this website to be relatively simple.  This isn't a webapp, this is a website.  Lighter, cleaner, easier to debug.  The admin panel might have needed some framework though, it gets pretty hairy in there :-/
+Because I intend this website to be relatively simple.  This isn't a webapp, this is a website.  Lighter, cleaner, easier to debug.
 
 What is this semantic stuff?
 
