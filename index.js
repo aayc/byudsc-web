@@ -4,7 +4,7 @@ var server = require('http').Server(app);
 var bodyParser = require('body-parser');
 var gspread = require('google-spreadsheet');
 var creds = require('./event-creds.json');
-var fs = require('fs');
+var fs = require('fs'); 
 
 app.use( bodyParser.json() );
 app.use(express.static('public'));
@@ -28,14 +28,14 @@ app.post('/get-events', function(req, res) {
 				var content = row_data[i].content;
 				if (!(category in seen)) {
 					seen[category] = true;
-					categories.push({ "category-name": category, "events": [] });
+					categories.unshift({ "category-name": category, "events": [] });
 				}
 
 				var eventList = categories.filter(function (x) { 
 					return x["category-name"] == category;
 				})[0].events;
 
-				eventList.push({
+				eventList.unshift({
 					"name" : header,
 					"date" : date,
 					"content" : content
@@ -44,7 +44,10 @@ app.post('/get-events', function(req, res) {
 			res.send({ "categories" : categories });
 		});
 	});
-    /*var eventsFileContents = JSON.parse(fs.readFileSync('admin/events.json', 'utf8'));
+    /*
+	DEPRECATED - fetch from events.json, which is updated by admin page.
+	now uses google spreadsheets.
+    var eventsFileContents = JSON.parse(fs.readFileSync('admin/events.json', 'utf8'));
     res.send(eventsFileContents);*/
 });
 
