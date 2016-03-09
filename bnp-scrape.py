@@ -13,9 +13,6 @@ def parseTeam (tr):
 	score = tr.find("abbr", {"class" : "score"}).getText().strip().encode("utf-8")
 	name = tr.find("a", {"class" : "team-link"}).getText().strip().encode("utf-8")
 	position = tr.find("td", {"class" : "leader-number"}).getText().strip().encode("utf-8")
-	#print "Name: ", name
-	#print "Position: ", position
-	#print "Score: ", score
 	return {
 		"score" : score,
 		"name" : name,

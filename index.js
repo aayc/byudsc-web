@@ -47,7 +47,7 @@ app.post('/get-events', function(req, res) {
 
 		events.getRows(1, {
 			start: 0,			 // start index 
-			num: 3,			   // number of rows to pull 
+			num: 100,			   // number of rows to pull 
 		}, function(err, row_data){
 			var categories = [];
 			seen = {};
