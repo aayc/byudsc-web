@@ -7,7 +7,7 @@ var creds = require('./event-creds.json');
 var fs = require('fs'); 
 var pyshell = require('python-shell')
 
-app.use( bodyParser.json() );
+app.use(bodyParser.json());
 app.use(express.static('public'));
 var LEADERBOARD;
 
