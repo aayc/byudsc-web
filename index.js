@@ -30,7 +30,7 @@ scrapeLeaderboard(function (err, result) {
 	console.log("LEADERBOARD SCRAPE COMPLETE")
 	console.log("ERROR? " + err)
 	console.log("FIRST 3: ")
-	console.log(LEADERBOARD.slice(0, 3))
+	//console.log(LEADERBOARD.slice(0, 3))
 })
 
 app.post('/get-leaderboard', function (req, res) {
