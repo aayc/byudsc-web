@@ -5,9 +5,36 @@ var bodyParser = require('body-parser');
 var gspread = require('google-spreadsheet');
 var creds = require('./event-creds.json');
 var fs = require('fs'); 
+var pyshell = require('python-shell')
 
 app.use( bodyParser.json() );
 app.use(express.static('public'));
+var LEADERBOARD;
+
+/* 2016 CONTEST CODE
+/* On start, scrape BNP leaderboard. */
+
+function scrapeLeaderboard (callback) {
+	var options = {
+      mode: 'text',
+      pythonPath: 'python',
+      pythonOptions: ['-u'],
+      scriptPath: '',
+    };
+
+    pyshell.run('bnp-scrape.py', options, callback);
+}
+
+scrapeLeaderboard(function (err, result) {
+	LEADERBOARD = result
+	console.log("LEADERBOARD SCRAPE COMPLETE")
+})
+
+app.post('/get-leaderboard', function (req, res) {
+	res.send(LEADERBOARD)
+})
+
+/* --------------- END CONTEST 2016 CODE ----- */
 
 
 	 
