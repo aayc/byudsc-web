@@ -62,7 +62,62 @@
 
   <div class="ui main text container">
     <h1 class="ui header">Competition Rules</h1>
-    <p>Coming soon!</p>
+  
+    <h2><u>TEAMS</u></h2>
+    <h3>Team Name</h3>
+    <ul>
+      <li>Participating teams must preface their team name with "BYU_" (quotes for clarity only, don't include them in your name).</li>
+      <li>One account per participant</li>
+      <li>You cannot sign up to Kaggle from multiple accounts and therefore you cannot submit from multiple accounts.</li>
+      <li>No private sharing outside teams</li>
+      <li>Privately sharing code or data outside of teams is not permitted. It's okay to share code if made available to all participants on the forums.</li>
+    </ul>
+
+    <h3>Team Limits</h3>
+    <ul>
+      <li>Teams must be composed of up to 3 BYU-enrolled students. At least one member of the team must be an undergrad.</li>
+    </ul>
+
+    <h2><u>FORMING A TEAM</u></h2>
+    <ul>
+      <li>Multiple individuals or entities may collaborate as a team (“Team”). You may not participate on more than one Team. Each Team member must be a single individual operating a separate Kaggle account. You must register individually for the Competition before joining a Team. You must confirm your Team membership to make it offcial by responding to the Team noti cation message which will be sent to your Account.</li>
+      <li>Team membership may not exceed the Maximum Team Size.</li>
+    </ul>
+
+    <h3>Submission Limits</h3>
+
+    <ul>
+      <li>You may submit a maximum of 5 entries per day.</li>
+      <li>Competition Timeline</li>
+      <ul>
+        <li>Start Date: 3/17/2016</li>
+        <li>First Submission Deadline: 3/31/2016</li>
+        <li>End Date: 4/11/2016 4:59:00 PM</li>
+      </ul>
+    </ul>
+
+    <h2><u>COMPETITION-SPECIFIC TERMS</u></h2>
+    <ul>
+      <li>COMPETITION NAME (the 'Competition'): BNP Paribas Cardif Claims Management</li>
+      <li>LOCAL COMPETITION SPONSORS: BYU Math Department and ACME</li>
+      <li>COMPETITION SPONSOR: BNP Paribas Cardif</li>
+      <li><a target="_blank" href="https://www.kaggle.com/c/bnp-paribas-cardif-claims-management">COMPETITION WEBSITE LINK</a></li>
+    </ul>
+
+    <h2><u>PRIZES:</u></h2>
+    <p>The 3 best BYU Participants or Teams will win the following prizes:</p>
+    <ul>
+      <li> 1st Prize: ???</li>
+      <li> 2nd Prize: ???</li>
+      <li> 3rd Prize: ???</li>
+    </ul>
+    <p>Participants are encouraged to continue the participating in the competition after the BYU portion of the competition has ended.</p>
+
+    <h2><u>RESOLVING TIES</u></h2>
+    <p>A tie between two or more valid and identically ranked submissions will be resolved in favour of the tied submission that was submitted first.</p>
+
+    <h2><u>CHEATING</u></h2>
+    <p>Participating using more than one Kaggle account is deemed cheating and, if discovered, will result in disqualification from the Competition and any other a ected Competitions and may result in banning or deactivation of affected Kaggle accounts. The use of data other than the given data is not permitted.</p>
 
     <h1 class="ui header">Leaderboard</h1>
     <table class="ui celled fluid padded table">
@@ -136,7 +191,6 @@ app.controller('mainCtrl', ['$scope', function($scope) {
     $scope.leaderboard = data.map(function (x) {
       return JSON.parse(x)
     })
-    console.log("DONE")
     $scope.$apply()
   })
 }])

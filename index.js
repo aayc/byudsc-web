@@ -29,8 +29,6 @@ scrapeLeaderboard(function (err, result) {
 	LEADERBOARD = result
 	console.log("LEADERBOARD SCRAPE COMPLETE")
 	console.log("ERROR? " + err)
-	console.log("FIRST 3: ")
-	//console.log(LEADERBOARD.slice(0, 3))
 })
 
 app.post('/get-leaderboard', function (req, res) {
@@ -46,8 +44,8 @@ app.post('/get-events', function(req, res) {
 	events.useServiceAccountAuth(creds, function(err){
 
 		events.getRows(1, {
-			start: 0,			 // start index 
-			num: 100,			   // number of rows to pull 
+			start: 0,			   // start index 
+			num: 1000,			   // number of rows to pull 
 		}, function(err, row_data){
 			var categories = [];
 			seen = {};

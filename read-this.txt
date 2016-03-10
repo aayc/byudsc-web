@@ -18,9 +18,6 @@ What is admin-OLD?
 
 It was an experiment to have really fast events page loading, where people could edit and delete and add events to the page.  It was getting too complicated though, so I decided to use Google Spreadsheets API.
 
-Why aren't you using AngularJS or React?  Why Jquery?
-
-Because I intend this website to be relatively simple.  This isn't a webapp, this is a website.  Lighter, cleaner, easier to debug.
 
 What is this semantic stuff?
 
@@ -34,4 +31,4 @@ I know most of the team knows python, so I heavily considered using Django for t
 
 Who are you?  How do I reach you?
 
-My name is Aaron Chan, I'm a junior (secretly a freshman) at BYU, and I'm probably on a mission right now, otherwise I'd be the one maintaining the website.  Sorry.  I'm trying to write everything I know into documentation like this.  Jacob (head of DSC club atm) will probably be well-informed about this by myself, but he's graduating.  Hopefully the code is clear enough for you.  I tried to make it as semantic and logical as possible.
+My name is Aaron Chan, I'm a junior at BYU, and I'm probably on a mission right now, otherwise I'd be the one maintaining the website.  Sorry.  I'm trying to write everything I know into documentation like this.  Jacob (head of DSC club atm) will probably be well-informed about this by myself, but he's graduating.  Hopefully the code is clear enough for you.  I tried to make it as semantic and logical as possible.
