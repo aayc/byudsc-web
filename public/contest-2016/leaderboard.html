@@ -55,7 +55,7 @@
         BYU Data Science Competition
       </a>
       <a href="/index.html" class="item">Home</a>
-      <a href="/events.html" class="item">Events</a>
+      <a href="competition.html" class="item">Rules</a>
       <a href="/notes.html" class="item">Notes</a>
     </div>
   </div>
@@ -132,7 +132,7 @@ var app = angular.module('app',[]);
 
 app.controller('mainCtrl', ['$scope', function($scope) {
   $scope.leaderboard = []
-  $scope.headers = ["Team Name", "Position", "Score"]
+  $scope.headers = ["Team Name", "Kaggle Position", "Score"]
 
   $.post("/get-leaderboard", function (data) {
     $scope.leaderboard = data.map(function (x) {
