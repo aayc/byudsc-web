@@ -25,11 +25,19 @@ function scrapeLeaderboard (callback) {
     pyshell.run('bnp-scrape.py', options, callback);
 }
 
+setInterval(function(){
+	scrapeLeaderboard(function (err, result) {
+		LEADERBOARD = result
+		console.log("LEADERBOARD SCRAPE COMPLETE")
+		console.log("ERROR? " + err)
+	})
+}, 60 * 1000);     
 scrapeLeaderboard(function (err, result) {
 	LEADERBOARD = result
 	console.log("LEADERBOARD SCRAPE COMPLETE")
 	console.log("ERROR? " + err)
 })
+
 
 app.post('/get-leaderboard', function (req, res) {
 	res.send(LEADERBOARD)

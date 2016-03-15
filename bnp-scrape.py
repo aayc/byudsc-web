@@ -25,7 +25,7 @@ listings = soup.find("table", {"id" : "leaderboard-table"}).findAll("tr")[1::];
 listings = filter(lambda x: validateRow(x), listings)
 listings = sorted(map(lambda x: parseTeam(x), listings), key=lambda x: x["position"])
 
-byus = listings#filter(lambda x: "BYU" in x, listings)
+byus = filter(lambda x: "BYU" in x["name"].upper(), listings)
 asJson = [json.dumps(i) for i in byus]
 for j in asJson:
 	print j
