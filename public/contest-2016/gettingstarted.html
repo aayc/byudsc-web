@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <!-- Site Properties -->
-  <title>DSC Leaderboard</title>
+  <title>Getting Started</title>
   <link rel="stylesheet" type="text/css" href="/semantic/dist/components/table.min.css">
   <link rel="stylesheet" type="text/css" href="/semantic/dist/components/reset.css">
   <link rel="stylesheet" type="text/css" href="/semantic/dist/components/site.css">
@@ -18,13 +18,13 @@
   <link rel="stylesheet" type="text/css" href="/semantic/dist/components/image.css">
   <link rel="stylesheet" type="text/css" href="/semantic/dist/components/menu.css">
 
-  <link rel="stylesheet" type="text/css" href="/semantic/dist/components/divider.css">
-  <link rel="stylesheet" type="text/css" href="/semantic/dist/components/list.css">
-  <link rel="stylesheet" type="text/css" href="/semantic/dist/components/segment.css">
-  <link rel="stylesheet" type="text/css" href="/semantic/dist/components/dropdown.css">
   <link rel="stylesheet" type="text/css" href="/semantic/dist/components/icon.css">
+  <link rel="stylesheet" type="text/css" href="/semantic/dist/shCore.css"/>
+  <link rel="stylesheet" type="text/css" href="/semantic/dist/shThemeDefault.css"/>
   <script type="text/javascript" src="/semantic/dist/angular.min.js"></script>
   <script type="text/javascript" src="/semantic/dist/jquery-2.2.0.min.js"></script>
+  <script type="text/javascript" src="/semantic/dist/shCore.js"></script>
+  <script type="text/javascript" src="/semantic/dist/shBrushPython.js"></script>
 
   <style type="text/css">
   body {
@@ -56,28 +56,57 @@
       </a>
       <a href="/index.html" class="item">Home</a>
       <a href="competition.html" class="item">Rules</a>
-      <a href="gettingstarted.html" class="item">Getting Started</a>
+      <a href="leaderboard.html" class="item">Leaderboard</a>
       <a href="/notes.html" class="item">Notes</a>
     </div>
   </div>
 
   <div class="ui main text container">
-    <h3>Proudly sponsored by the data science team at <a target="_blank" href="https://jane.com">Jane.com</a> and the BYU ACME program.</h3>
-    <center><img width=400 height=100 src="/img/janelogo.png"></img>
-    <br />
-    <img width=240 height=100 src="/img/acmelogo.png"></img></center>
 
-    <h1 class="ui header">Leaderboard</h1>
-    <table class="ui celled fluid padded table">
-      <tr>
-        <th ng-repeat="lbl in headers">{{lbl}}</td>
-      </tr>
-      <tr ng-repeat="team in leaderboard">
-        <td>{{team.name}}</td>
-        <td>{{team.position}}</td>
-        <td>{{team.score}}</td>
-      </tr>
-    </table>
+    <h1 class="ui header">Getting started with Kaggle</h1>
+
+    <p>Prepping and submitting to Kaggle seems intimidating, especially if it's your first time.  Let's walk through a simple submission for the BNP data set.</p>
+
+    <p>First, you'll need to download the datasets.  Download them <a target="_blank" href="https://www.kaggle.com/c/bnp-paribas-cardif-claims-management/data">here</a>.  You'll need both the train and test csv files.</p>
+
+    <p>If you haven't already, install numpy (numerical calculation library for Python), pandas (dataset manipulation library) and sklearn (sci-kit learn, a machine learning library).  We recommend setting these up in a virtual environment.</p>
+
+    <p>Try running the following code:</p>
+
+    <pre class="brush: python">
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+​
+​
+#import train and test
+train = pd.read_csv('~/databases/bnp/train.csv')  # Point these to where you stored your csv files.
+test  = pd.read_csv('~/databases/bnp/test.csv')
+​
+#find numerical columns
+is_numeric = train[:5].applymap(np.isreal).all(0) 
+predictors = [col for col in train.columns[2:] if is_numeric[col]]
+​
+#imputation
+train = train.fillna(train.median())
+test  = test.fillna(train.median())
+​
+#logistic regression
+alg = LogisticRegression()
+alg.fit(train[predictors],train["target"])
+predictions = alg.predict_proba(test[predictors])[:,0]  
+​
+#save submission
+submission = pd.DataFrame({ "PredictedProb": predictions,"ID":test.ID})
+submission.to_csv('submission_bnp_example',index=False)
+​
+'''This gets a score of 1.45828, which isn't the best.'''
+    </pre>
+
+    <p>Navigate to Kaggle's <a href="https://www.kaggle.com/c/bnp-paribas-cardif-claims-management/submit" target="_blank">submit page</a> and upload your csv file.</p>
+
+    <p>Congratulations, you've made your first Kaggle submission!  Try tweaking the above code or attempting a new method to rise through the ranks!</p>
+    
   </div>
 
   <div class="ui inverted vertical footer segment">
@@ -128,19 +157,11 @@
 </body>
 
 <script>
+SyntaxHighlighter.all();
 
 var app = angular.module('app',[]);
 
 app.controller('mainCtrl', ['$scope', function($scope) {
-  $scope.leaderboard = []
-  $scope.headers = ["Team Name", "Kaggle Position", "Score"]
-
-  $.post("/get-leaderboard", function (data) {
-    $scope.leaderboard = data.map(function (x) {
-      return JSON.parse(x)
-    })
-    $scope.$apply()
-  })
 }])
 
 </script>
